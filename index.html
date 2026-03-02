@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Requests | Govt College Dharamshala</title>
+    <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #f4f7f6;
+            --error-color: #d93025;
+            --success-color: #28a745;
+            --required-color: #e32;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--secondary-color); padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 8px solid var(--primary-color); position: relative; }
+        header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; }
+        header h1 { color: var(--primary-color); margin: 0; text-transform: uppercase; }
+        .section-title { background: var(--primary-color); color: white; padding: 10px 15px; margin: 20px 0 15px 0; border-radius: 4px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .full-width { grid-column: span 2; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; }
+        .required::after { content: " *"; color: var(--required-color); font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .hidden { display: none; }
+        .submit-btn { background: var(--primary-color); color: white; padding: 15px 30px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; width: 100%; margin-top: 20px; }
+        #success-overlay {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.95); z-index: 100; flex-direction: column;
+            justify-content: center; align-items: center; border-radius: 8px; text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="success-overlay">
+        <h2>✓ Request Submitted!</h2>
+        <p>Your request has been logged in the college system.<br>Redirecting...</p>
+    </div>
+
+    <header>
+        <h1>Govt College Dharamshala</h1>
+        <p>Student Requests Portal</p>
+    </header>
+
+    <form action="https://webto.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8&orgId=00Dg50000051DV8" method="POST" id="requestForm" onsubmit="return validateRequest(event)">
+        <input type="hidden" name="orgid" value="00Dg50000051DV8">
+        <input type="hidden" name="retURL" value="https://www.gcdharamshala.ac.in/thank-you">
+
+        <input type="hidden" name="origin" value="Web">
+        <input type="hidden" name="priority" value="Medium">
+        <input type="hidden" name="status" value="Submitted">
+
+        <div class="section-title">Step 1: Select Request Type</div>
+        <label class="required">What kind of request are you making?</label>
+        <select id="recordType" name="recordType" required onchange="toggleFields()">
+            <option value="">--Select--</option>
+            <option value="012g5000001FF9R">Leave Request</option>
+            <option value="012g5000001FFUP">Student Issue</option>
+        </select>
+
+        <div id="formFields" class="hidden">
+            <div class="section-title">Step 2: Details</div>
+            <div class="grid">
+                <div>
+                    <label class="required">Full Name</label>
+                    <input id="name" name="name" type="text" required>
+                </div>
+                <div>
+                    <label class="required">College Roll Number</label>
+                    <input id="roll_no" name="00Ng500000BFElt" type="text" required>
+                </div>
+                <div>
+                    <label class="required">Email Address</label>
+                    <input name="email" type="email" required>
+                </div>
+                <div>
+                    <label class="required">Phone Number</label>
+                    <input name="phone" type="tel" required pattern="[0-9]{10}">
+                </div>
+
+                <div id="leaveSection" class="full-width grid hidden">
+                    <div>
+                        <label class="required">Leave Start Date</label>
+                        <input id="startDate" name="00Ng5000009r74b" type="date">
+                    </div>
+                    <div>
+                        <label class="required">Leave End Date</label>
+                        <input id="endDate" name="00Ng5000009r5bZ" type="date">
+                    </div>
+                </div>
+
+                <div id="issueSection" class="full-width hidden">
+                    <label class="required">Issue Category</label>
+                    <select id="issueType" name="type">
+                        <option value="">--Select Category--</option>
+                        <option value="Administrative">Administrative</option>
+                        <option value="Hostel">Hostel</option>
+                        <option value="Canteen">Canteen</option>
+                        <option value="Marks">Marks</option>
+                        <option value="ID Card.">ID Card.</option>
+                    </select>
+                </div>
+
+                <div class="full-width">
+                    <label class="required">Subject / Title</label>
+                    <input name="subject" type="text" required placeholder="Short summary of request">
+                </div>
+                <div class="full-width">
+                    <label class="required">Description</label>
+                    <textarea name="description" rows="4" required placeholder="Provide full details here..."></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Submit Request</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function toggleFields() {
+        const type = document.getElementById('recordType').value;
+        const formFields = document.getElementById('formFields');
+        const leaveSection = document.getElementById('leaveSection');
+        const issueSection = document.getElementById('issueSection');
+        
+        // Fields to toggle requirement
+        const startDate = document.getElementById('startDate');
+        const endDate = document.getElementById('endDate');
+        const issueType = document.getElementById('issueType');
+
+        if (type === "") {
+            formFields.classList.add('hidden');
+        } else {
+            formFields.classList.remove('hidden');
+            if (type === "012g5000001FF9R") { // Leave Request
+                leaveSection.classList.remove('hidden');
+                issueSection.classList.add('hidden');
+                startDate.required = true;
+                endDate.required = true;
+                issueType.required = false;
+            } else { // Student Issue
+                leaveSection.classList.add('hidden');
+                issueSection.classList.remove('hidden');
+                startDate.required = false;
+                endDate.required = false;
+                issueType.required = true;
+            }
+        }
+    }
+
+    function validateRequest(event) {
+        const type = document.getElementById('recordType').value;
+        if (type === "012g5000001FF9R") {
+            const start = new Date(document.getElementById('startDate').value);
+            const end = new Date(document.getElementById('endDate').value);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            // 1. Start Date must be today or in future
+            if (start < today) {
+                alert("Leave Start Date cannot be in the past.");
+                return false;
+            }
+
+            // 2. End Date cannot be before Start Date
+            if (end < start) {
+                alert("Leave End Date cannot be before the Start Date.");
+                return false;
+            }
+
+            // 3. Max leave 31 days
+            const diffTime = Math.abs(end - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+            if (diffDays > 31) {
+                alert("Leave duration cannot exceed 1 month (31 days).");
+                return false;
+            }
+        }
+
+        document.getElementById('success-overlay').style.display = 'flex';
+        return true;
+    }
+</script>
+</body>
+</html>
