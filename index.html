@@ -134,7 +134,7 @@
             formFields.classList.add('hidden');
         } else {
             formFields.classList.remove('hidden');
-            if (type === "012g5000001FF9R") { // Leave Request
+            if (type === "012g5000001FF9RAAW") { // Leave Request
                 leaveSection.classList.remove('hidden');
                 issueSection.classList.add('hidden');
                 startDate.required = true;
@@ -152,7 +152,7 @@
 
     function validateRequest(event) {
         const type = document.getElementById('recordType').value;
-        if (type === "012g5000001FF9R") {
+        if (type === "012g5000001FF9RAAW") {
             const start = new Date(document.getElementById('startDate').value);
             const end = new Date(document.getElementById('endDate').value);
             const today = new Date();
