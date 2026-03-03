@@ -140,7 +140,7 @@
                 startDate.required = true;
                 endDate.required = true;
                 issueType.required = false;
-            } else { // Student Issue
+            } else (type === "012g5000001FFUPAA4") { // Student Issue
                 leaveSection.classList.add('hidden');
                 issueSection.classList.remove('hidden');
                 startDate.required = false;
